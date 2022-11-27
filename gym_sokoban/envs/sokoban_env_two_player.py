@@ -27,8 +27,8 @@ class TwoPlayerSokobanEnv(SokobanEnv):
         super(TwoPlayerSokobanEnv, self).reset(second_player=second_player)
 
         self.player_positions = {
-            0: np.argwhere(self.room_state == 5)[0],
-            1: np.argwhere(self.room_state == 5)[1]
+            0: np.argwhere((self.room_state == 1) | (self.room_state == 2))[0],
+            1: np.argwhere((self.room_state == 1) | (self.room_state == 2))[1]
         }
 
         return self.render(mode=render_mode)

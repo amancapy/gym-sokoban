@@ -13,9 +13,7 @@ def room_to_rgb(room, room_structure=None):
     resource_package = __name__
 
     room = np.array(room)
-    if not room_structure is None:
-        # Change the ID of a player on a target
-        room[(room == 5) & (room_structure == 2)] = 6
+
 
     # Load images, representing the corresponding situation
     box_filename = pkg_resources.resource_filename(resource_package, '/'.join(('surface', 'box.png')))
@@ -41,7 +39,7 @@ def room_to_rgb(room, room_structure=None):
     wall_filename = pkg_resources.resource_filename(resource_package, '/'.join(('surface', 'wall.png')))
     wall = imageio.imread(wall_filename)
 
-    surfaces = [wall, floor, box_target, box_on_target, box, player, player_on_target]
+    surfaces = [floor, player, player_on_target, wall, box, box_target, box_on_target]
 
     # Assemble the new rgb_room, with all loaded images
     room_rgb = np.zeros(shape=(room.shape[0] * 16, room.shape[1] * 16, 3), dtype=np.uint8)
@@ -62,7 +60,7 @@ def room_to_tiny_world_rgb(room, room_structure=None, scale=1):
     room = np.array(room)
     if not room_structure is None:
         # Change the ID of a player on a target
-        room[(room == 5) & (room_structure == 2)] = 6
+        room[(room == 1) & (room_structure == 5)] = 6
 
     wall = [0, 0, 0]
     floor = [243, 248, 238]
@@ -72,7 +70,7 @@ def room_to_tiny_world_rgb(room, room_structure=None, scale=1):
     player = [160, 212, 56]
     player_on_target = [219, 212, 56]
 
-    surfaces = [wall, floor, box_target, box_on_target, box, player, player_on_target]
+    surfaces = [floor, player_on_target, player, box, wall, box_target, box_on_target]
 
     # Assemble the new rgb_room, with all loaded images
     room_small_rgb = np.zeros(shape=(room.shape[0]*scale, room.shape[1]*scale, 3), dtype=np.uint8)
@@ -98,7 +96,7 @@ def room_to_rgb_FT(room, box_mapping, room_structure=None):
     room = np.array(room)
     if not room_structure is None:
         # Change the ID of a player on a target
-        room[(room == 5) & (room_structure == 2)] = 6
+        room[(room == 1) & (room_structure == 5)] = 6
 
     # Load images, representing the corresponding situation
     box_filename = pkg_resources.resource_filename(resource_package, '/'.join(('surface', 'box.png')))
@@ -149,7 +147,7 @@ def room_to_rgb_FT(room, box_mapping, room_structure=None):
 def get_proper_box_surface(surfaces_id, box_mapping, i, j):
     # not used, kept for documentation
     # names = ["wall", "floor", "box_target", "box_on_target", "box", "player", "player_on_target"]
-    
+
     box_id = 0
     situation = ''
 
@@ -157,12 +155,7 @@ def get_proper_box_surface(surfaces_id, box_mapping, i, j):
         situation = '_target'
         box_id = list(box_mapping.keys()).index((i, j))
     elif surfaces_id == 3:
-        box_id = list(box_mapping.values()).index((i, j))
-        box_key = list(box_mapping.keys())[box_id]
-        if box_key == (i, j):
-            situation = '_on_target'
-        else:
-            situation = '_on_wrong_target'
+        situation = '_on_target'
         pass
     elif surfaces_id == 4:
         box_id = list(box_mapping.values()).index((i, j))
@@ -179,7 +172,7 @@ def room_to_tiny_world_rgb_FT(room, box_mapping, room_structure=None, scale=1):
         room = np.array(room)
         if not room_structure is None:
             # Change the ID of a player on a target
-            room[(room == 5) & (room_structure == 2)] = 6
+            room[(room == 1) & (room_structure == 5)] = 6
 
         wall = [0, 0, 0]
         floor = [243, 248, 238]
@@ -221,10 +214,7 @@ def get_proper_tiny_box_surface(surfaces_id, box_mapping, i, j):
     elif surfaces_id == 3:
         box_id = list(box_mapping.values()).index((i, j))
         box_key = list(box_mapping.keys())[box_id]
-        if box_key == (i, j):
-            situation = 'on_target'
-        else:
-            situation = 'on_wrong_target'
+        situation = 'on_target'
         pass
     elif surfaces_id == 4:
         box_id = list(box_mapping.values()).index((i, j))
@@ -235,8 +225,6 @@ def get_proper_tiny_box_surface(surfaces_id, box_mapping, i, j):
             surface = [111, 127, 232]
         elif situation == 'on_target':
             surface = [6, 33, 130]
-        elif situation == 'on_wrong_target':
-            surface = [69, 81, 122]
         else:
             # Just the box
             surface = [11, 60, 237]
@@ -246,8 +234,6 @@ def get_proper_tiny_box_surface(surfaces_id, box_mapping, i, j):
             surface = [195, 127, 232]
         elif situation == 'on_target':
             surface = [96, 5, 145]
-        elif situation == 'on_wrong_target':
-            surface = [96, 63, 114]
         else:
             surface = [145, 17, 214]
 
@@ -256,8 +242,6 @@ def get_proper_tiny_box_surface(surfaces_id, box_mapping, i, j):
             surface = [221, 113, 167]
         elif situation == 'on_target':
             surface = [140, 5, 72]
-        elif situation == 'on_wrong_target':
-            surface = [109, 60, 71]
         else:
             surface = [239, 0, 55]
 
@@ -266,8 +250,6 @@ def get_proper_tiny_box_surface(surfaces_id, box_mapping, i, j):
             surface = [247, 193, 145]
         elif situation == 'on_target':
             surface = [132, 64, 3]
-        elif situation == 'on_wrong_target':
-            surface = [94, 68, 46]
         else:
             surface = [239, 111, 0]
 
@@ -287,7 +269,7 @@ def color_player_two(room_rgb, position, room_structure):
     x_i = position[0] * 16
     y_j = position[1] * 16
 
-    if room_structure[position[0], position[1]] == 2:
+    if room_structure[position[0], position[1]] == 5:
         room_rgb[x_i:(x_i + 16), y_j:(y_j + 16), :] = player_on_target
 
     else:
@@ -296,12 +278,12 @@ def color_player_two(room_rgb, position, room_structure):
     return room_rgb
 
 
-def color_tiny_player_two(room_rgb, position, room_structure, scale = 4):
+def color_tiny_player_two(room_rgb, position, room_structure, scale=4):
 
     x_i = position[0] * scale
     y_j = position[1] * scale
 
-    if room_structure[position[0], position[1]] == 2:
+    if room_structure[position[0], position[1]] == 5:
         room_rgb[x_i:(x_i + scale), y_j:(y_j + scale), :] = [195, 127, 232]
 
     else:

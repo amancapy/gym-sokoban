@@ -1,5 +1,5 @@
 # sokoban environment for openai gym, with instant reset
-# credit to mpSchrader for creating the environment
+**full credit to mpSchrader for creating the environment; the main branch**
 
 all changes that I have made will reflect only [here](https://github.com/amancapy/gym-sokoban/tree/default/gym_sokoban/envs). The fundamental changes are that I forgo procedural level generation that the author has implemented via random walk and box-pull, which is computationally heavy and takes upwards of 30s each .reset() call, to instead randomly pick from a repository of 800+ levels found [here ](http://web.archive.org/web/20121128163252/http://users.bentonrea.com/)(seems like link now dead) randomly rotated so an effective ~2500 levels in all. The major advantage is of course that it is instant to reset the environment, but additionally I believe hand-made levels come with the benefit of teaching corrals and other such intricacies of "real" sokoban levels which randomly generated levels will most probably fail to generate.
 
